@@ -21,17 +21,9 @@ class SimpleController(Node):
 
         self.wheel_cmd_pub = self.create_publisher(Float64MultiArray, "simple_velocity_controller/commands", 10 )
         self.pubber = self.create_publisher(TwistStamped, "mobile_robot_controller/cmd_vel",10)
-        self.vel_sub = self.create_subscription(TwistStamped, "my_robot_controller/cmd_vel", self.velCallBack, 10)
-        self.joint_sub = self.create_subscription(JointState, "Joint_states", self.joint_callback,10)
         self.speed_conversion = np.array(([self.wheel_radius/2,self.wheel_radius/2],[self.wheel_radius/self.wheel_separation,-self.wheel_radius/self.wheel_separation]))
-        self.timer = self.create_timer(1,self.velocity_pusher)
+        self.get_logger().info("The conversion matrix is " + str(self.speed_conversion))
         
-    def velocity_pusher(self):
-
-        message = TwistStamped
-        message._twist._linear.x = 0.5
-        message._twist._angular.z = 0.5
-        self.pubber.publish(message)
 
     def velCallBack(self,msg):
         robot_speed = np.array(([msg.twist.linear.x],[msg.twist.angular.z]))
